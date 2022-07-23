@@ -2,6 +2,10 @@
 # Amazon WAF  
 # --------------------------------------------------------------------
 
+module "global_settings" {
+  source = "../global"
+}
+
 resource "aws_wafv2_web_acl" "this" {
   name        = "mhs-wacl-cloudfront"
   description = "Contains rules that are generally applicable to web applications. This provides protection against exploitation of a wide range of vulnerabilities, including those described in OWASP publications."
@@ -42,22 +46,18 @@ resource "aws_wafv2_web_acl" "this" {
 
     visibility_config {
       cloudwatch_metrics_enabled = false
-      metric_name                = "friendly-rule-metric-name"
+      metric_name                = "owasp-rule-metric"
       sampled_requests_enabled   = false
     }
   }
 
   tags = {
-    name       = "WAF MHS"
-    author     = "MHS Grupo 1"
-    version    = 1
-    university = "ITBA"
-    subject    = "Cloud Computing"
+    name = local.tags.name
   }
 
   visibility_config {
     cloudwatch_metrics_enabled = false
-    metric_name                = "friendly-metric-name"
+    metric_name                = "owasp-metric"
     sampled_requests_enabled   = false
   }
 }

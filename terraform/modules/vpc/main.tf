@@ -15,11 +15,7 @@ resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
 
   tags = {
-    name       = "VPC MHS"
-    author     = "MHS Grupo 1"
-    version    = 1
-    university = "ITBA"
-    subject    = "Cloud Computing"
+    name = local.aws_vpc.tags.name
   }
 }
 
@@ -31,22 +27,19 @@ resource "aws_subnet" "this" {
   cidr_block        = local.private_subnets[count.index]
 
   tags = {
-    name       = "Subnet MHS"
-    author     = "MHS Grupo 1"
-    version    = 1
-    university = "ITBA"
-    subject    = "Cloud Computing"
+    name = local.aws_subnet.tags.name
   }
 }
 
-
-# TODO(para el final): Lambdas en VPC, accederian a S3 y DynamoDB por VPC endpoint 
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
-
 }
 
-resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.this.id
-  service_name = "com.amazonaws.us-east-1.s3"
+resource "aws_vpc_endpoint" "this" {
+  for_each = var.vpc_endpoints
+
+  vpc_id            = aws_vpc.this.id
+  service_name      = each.value.service_name
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [aws_vpc.this.default_route_table_id]
 }

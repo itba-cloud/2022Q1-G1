@@ -4,14 +4,15 @@
 
 module "cloudfront" {
 
-  source          = "../modules/cloudfront"
-  domain_name     = module.s3.website_endpoint
+  source = "../modules/cloudfront"
+
+  providers = {
+    aws = aws.aws
+  }
+
+  domain_name     = module.s3["www-website"].website_endpoint
   api_domain_name = module.apigw.domain_name
   web_acl_arn     = module.waf.web_acl_arn
-
-  depends_on = [
-    module.s3,
-    module.apigw,
-    module.waf
-  ]
+  apigw_origin_id = "api-gw"
+  s3_origin_id    = "S3"
 }

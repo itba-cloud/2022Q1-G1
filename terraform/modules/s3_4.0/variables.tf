@@ -7,12 +7,6 @@ variable "bucket_name" {
   description = "The name of the bucket. Must be less than or equal to 63 characters in length."
 }
 
-# variable "objects" {
-#   type        = map(any)
-#   description = ""
-#   default     = {}
-# }
-
 variable "block_public_access" {
   type        = bool
   default     = true
@@ -28,5 +22,51 @@ variable "bucket_acl" {
 variable "mime_types" {
   type        = map(any)
   description = "Mime types"
+}
 
+variable "is_website" {
+  type        = bool
+  description = "If the bucket is a website bucket then contains = true, else false "
+  default     = false
+}
+
+variable "is_log" {
+  type        = bool
+  description = "If the bucket is a logging bucket"
+  default     = false
+}
+
+variable "logs_from" {
+  type        = string
+  description = "Name of the bucket to log from"
+  default     = ""
+}
+
+variable "objects" {
+  type        = list(any)
+  description = "Bucket objects"
+  default     = []
+}
+
+variable "website_name" {
+  type        = string
+  description = "website name"
+}
+
+variable "website_config" {
+  type        = map(any)
+  description = "Website configuration"
+  default     = {}
+}
+
+variable "template_file" {
+  type        = any
+  description = "index.html"
+  default     = {}
+}
+
+variable "encrypt" {
+  type        = bool
+  description = "Encrypted bucket with AWS managed key"
+  default     = false
 }

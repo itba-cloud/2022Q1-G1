@@ -2,11 +2,15 @@
 # Amazon Cloudfront
 # ---------------------------------------------------------------------------
 
+module "global_settings" {
+  source = "../global"
+}
+
 resource "aws_cloudfront_distribution" "s3" {
   origin {
 
     domain_name = var.domain_name
-    origin_id   = local.s3_origin_id
+    origin_id   = var.s3_origin_id
 
     custom_origin_config {
       http_port              = "80"
@@ -19,8 +23,8 @@ resource "aws_cloudfront_distribution" "s3" {
   origin {
 
     domain_name = var.api_domain_name
-    origin_id   = local.api_origin_id
-    origin_path = "/production"
+    origin_id   = var.apigw_origin_id
+    origin_path = "/${module.global_settings.stage_name}"
 
     custom_origin_config {
       http_port              = 80
@@ -39,7 +43,7 @@ resource "aws_cloudfront_distribution" "s3" {
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
+    target_origin_id = var.s3_origin_id
 
     forwarded_values {
       query_string = false
@@ -57,18 +61,13 @@ resource "aws_cloudfront_distribution" "s3" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA", "GB", "DE"]
+      restriction_type = "none"
     }
   }
 
   tags = {
-    environment = "production"
-    name        = "Cloudfront Distribution MHS"
-    author      = "MHS Grupo 1"
-    version     = 1
-    university  = "ITBA"
-    subject     = "Cloud Computing"
+    environment = module.global_settings.stage_name
+    name        = "Cloudfront"
   }
 
   viewer_certificate {
